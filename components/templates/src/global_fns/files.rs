@@ -91,7 +91,16 @@ impl TeraFn for GetUrl {
             };
 
             match resolve_internal_link(&path_with_lang, &self.permalinks) {
-                Ok(resolved) => Ok(to_value(resolved.permalink).unwrap()),
+                Ok(resolved) => {
+                    let path_no_base_url =
+                        resolved.permalink.strip_prefix(&self.config.base_url).unwrap();
+                    let path_with_base_slash = match path_no_base_url.chars().next().unwrap_or('\0')
+                    {
+                        '/' => path_no_base_url.into(),
+                        _ => format!("/{}", path_no_base_url),
+                    };
+                    Ok(to_value(path_with_base_slash).unwrap())
+                }
                 Err(_) => Err(format!(
                     "`get_url`: could not resolve URL for link `{}` not found.",
                     path_with_lang
@@ -408,10 +417,7 @@ title = "A title"
         let mut args = HashMap::new();
         args.insert("path".to_string(), to_value("@/a_section/a_page.md").unwrap());
         args.insert("lang".to_string(), to_value("fr").unwrap());
-        assert_eq!(
-            static_fn.call(&args).unwrap(),
-            "https://remplace-par-ton-url.fr/a_section/a_page/"
-        );
+        assert_eq!(static_fn.call(&args).unwrap(), "/a_section/a_page/");
     }
 
     #[test]
@@ -431,10 +437,7 @@ title = "A title"
         let mut args = HashMap::new();
         args.insert("path".to_string(), to_value("@/a_section/a_page.md").unwrap());
         args.insert("lang".to_string(), to_value("en").unwrap());
-        assert_eq!(
-            static_fn.call(&args).unwrap(),
-            "https://remplace-par-ton-url.fr/en/a_section/a_page/"
-        );
+        assert_eq!(static_fn.call(&args).unwrap(), "/en/a_section/a_page/");
     }
 
     #[test]
