@@ -15,7 +15,7 @@
                 <ul>
                     {% for page in subsection.pages %}
                         <li class="{% if current_path == page.path %}active{% endif %}">
-                            <a href="{{page.permalink}}">{{page.title}}</a>
+                            <a href="{{page.path}}">{{page.title}}</a>
                         </li>
                     {% endfor %}
                 </ul>

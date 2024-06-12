@@ -11,7 +11,7 @@
             <h1>Zola themes</h1>
             <div class="themes">
                 {% for theme in section.pages %}
-                    <a class="theme" href="{{theme.permalink}}">
+                    <a class="theme" href="{{theme.path}}">
                         <img src="{{theme.permalink}}screenshot.png" alt="Screenshot of {{theme.title}}">
                         <span>{{theme.title}}</span>
                     </a>
